@@ -7,7 +7,9 @@ import { output, error, complete } from "./utils/callbacks";
 
 // Manually create an observable
 const observable = Observable.create((observer) => {
-
+  // This callback is called a "Producer" because it
+  // produces events that will be sent to the subscribers
+  
   try {
     // Send messages to subscriber's first callback
     observer.next("Message 1");
