@@ -6,13 +6,18 @@ const output = (val: any) => {
   $output.appendChild(node);
 }
 
+const outputLabel = label => E => {
+  return output(label + " " + E);
+}
+
 const error = E => {
   console.log("Error");
 }
+
 const complete = E => {
   console.log("Complete");
 }
 
 export default output;
 
-export { output, error, complete };
+export { output, outputLabel, error, complete };

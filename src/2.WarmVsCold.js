@@ -3,40 +3,42 @@ import { Observable } from "rxjs";
 import { share } from "rxjs/Operators";
 
 // Simple callbacks for subscribing to observables
-import { output, error, complete } from "./utils/callbacks";
+import { outputLabel } from "./utils/callbacks";
 
 
-const observable = Observable.create((observer) => {
+const count$ = Observable.create((observer) => {
   let counter = 0;
+  
   setInterval(()=>{
     observer.next("Event " + counter++);
-  },1000);  
+  },1000);
+  
 }).pipe(
   
-  // When shared, new subscribers will share the existing producer rather than creating their own.
-  // Disabling `share()` will start sub2 with it's own counter.
+  share() // <-- Toggle This!
   
-  // share() // <-- Toggle This!
+  // When shared, new subscribers will share the existing producer rather than creating their own.
+  
+  // This is known as a warm observable
+  
+  // Disabling `share()` will start sub2 with it's own counter.  
+  
+  // This is known as a cold observable
   
 );
 
-const myOutput = string => E => {
-  return output(string + " " + E);
-}
+// Start sub1
+const subs1 = count$.subscribe(outputLabel("Sub1:"));
 
-// Create two subscriptions from one observable
-const subscription1 = observable.subscribe(myOutput("Sub1:"), error, complete);
-let subscription2;
+// Wait two seconds and start sub2
+let subs2;
 setTimeout(()=> {
-  subscription2 = observable.subscribe(myOutput("Sub2:"), error, complete);
+  // Sharing will determine if sub2 starts with the same counter as sub1 or a counter of it's own.
+  subs2 = count$.subscribe(outputLabel("Sub2:"));
 },2000);
 
-
-// After three seconds
+// Unsub after three seconds
 setTimeout(() => {
-  subscription1.unsubscribe();
-  subscription2.unsubscribe();
-  
+  subs1.unsubscribe();
+  subs2.unsubscribe();
 },5001);
-
-export default {}
